@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import services from "./services/persons";
 
 const Search = ({ search, handleSearch }) => {
   return (
@@ -31,19 +32,26 @@ const AddPerson = ({
   );
 };
 
-const Person = ({ person }) => {
+const Person = ({ person, deletePerson }) => {
   return (
-    <p>
-      {person.name} {person.number}
-    </p>
+    <>
+      <li>
+        {person.name} {person.number}
+        <button onClick={deletePerson}>delete</button>
+      </li>
+    </>
   );
 };
 
-const Numbers = ({ showPersons }) => {
+const Numbers = ({ showPersons, deletePerson }) => {
   return (
     <div>
       {showPersons.map((person) => (
-        <Person key={person.name} person={person}></Person>
+        <Person
+          key={person.name}
+          person={person}
+          deletePerson={() => deletePerson(person.id, person.name)}
+        ></Person>
       ))}
     </div>
   );
@@ -55,11 +63,19 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
 
+  const deletePersonOf = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      services.remove(id).then((deletedPerson) => {
+        setPersons(persons.filter((person) => person.id != id));
+      });
+    }
+  };
+
   useEffect(() => {
     axios.get("http://localhost:3001/persons").then((response) => {
       setPersons(response.data);
     });
-  });
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -68,7 +84,11 @@ const App = () => {
       return;
     }
     if (!persons.some((person) => person.name === newName)) {
-      setPersons([...persons, { name: newName, number: newNumber }]);
+      services
+        .add({ name: newName, number: newNumber })
+        .then((returnedPerson) => {
+          setPersons([...persons, returnedPerson]);
+        });
     } else {
       alert(`${newName} is already added to phonebook`);
     }
@@ -94,7 +114,10 @@ const App = () => {
         onNumberChange={(event) => setNewNumber(event.target.value)}
       ></AddPerson>
       <h2>Numbers</h2>
-      <Numbers showPersons={showPersons}></Numbers>
+      <Numbers
+        showPersons={showPersons}
+        deletePerson={deletePersonOf}
+      ></Numbers>
     </div>
   );
 };

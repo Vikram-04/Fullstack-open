@@ -57,23 +57,49 @@ const Numbers = ({ showPersons, deletePerson }) => {
   );
 };
 
+const Notification = ({ message, color }) => {
+  if (message === null) return null;
+  const messageStyle = {
+    border: `solid 2px ${color}`,
+    color: `${color}`,
+    padding: "5px",
+    borderRadius: "5px",
+    marginBottom: "20px",
+    textAlign: "center",
+    fontSize: "20px",
+    marginInline: "30px",
+    backgroundColor: "lightGray",
+  };
+
+  return <div style={messageStyle}>{message}</div>;
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
+  const [message, setMessage] = useState([null, null]);
+
+  function resetMessage() {
+    setTimeout(() => {
+      setMessage([null, null]);
+    }, 5000);
+  }
 
   const deletePersonOf = (id, name) => {
     if (window.confirm(`Delete ${name}?`)) {
       services.remove(id).then((deletedPerson) => {
-        setPersons(persons.filter((person) => person.id != id));
+        setMessage([`Deleted ${deletedPerson.name} from phonebook`, "green"]);
+        resetMessage();
+        setPersons(persons.filter((person) => person.id != deletedPerson.id));
       });
     }
   };
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    services.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -87,6 +113,8 @@ const App = () => {
       services
         .add({ name: newName, number: newNumber })
         .then((returnedPerson) => {
+          setMessage([`Added ${returnedPerson.name} to phonebook`, "green"]);
+          resetMessage();
           setPersons([...persons, returnedPerson]);
         });
     } else {
@@ -99,9 +127,22 @@ const App = () => {
         services
           .update(person.id, { ...person, number: newNumber })
           .then((returnedPerson) => {
+            setMessage([
+              `${returnedPerson.name}'s phone number replaced successfully`,
+              "green",
+            ]);
+            resetMessage();
             setPersons(
               persons.map((p) => (p.id == person.id ? returnedPerson : p)),
             );
+          })
+          .catch((error) => {
+            setMessage([
+              `${person.name}'s information has already been deleted from the server`,
+              "red",
+            ]);
+            resetMessage();
+            setPersons(persons.filter((p) => p.id != person.id));
           });
       }
     }
@@ -114,6 +155,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={message[0]} color={message[1]}></Notification>
       <Search
         search={search}
         handleSearch={(event) => setSearch(event.target.value)}

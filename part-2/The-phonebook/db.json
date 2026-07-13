@@ -2,13 +2,13 @@
   "persons": [
     {
       "name": "Arto Hellas",
-      "number": "646394938",
+      "number": "58774892378",
       "id": "1"
     },
     {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": "2"
+      "name": "Vikram",
+      "number": "92942",
+      "id": "97Gnv0EYS4A"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -1,6 +1,5 @@
-const { response } = require("express");
-
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
 let persons = [
@@ -25,6 +24,16 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
+
+app.use(express.json());
+
+morgan.token("body", (req, res) => {
+  return JSON.stringify(req.body);
+});
+
+app.use(
+  morgan(`:method :url :status :res[content-length] - :response-time ms :body`),
+);
 
 app.get("/api/persons", (request, response) => {
   response.json(persons);
@@ -51,8 +60,6 @@ app.delete("/api/persons/:id", (request, response) => {
   persons = persons.filter((p) => p.id !== id);
   response.status(204).end();
 });
-
-app.use(express.json());
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;

@@ -57,8 +57,13 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id;
+  const person = persons.find((p) => p.id === id);
+  if (!person) {
+    response.status(404).json({ error: `Person with id ${id} does not exist` });
+    return;
+  }
   persons = persons.filter((p) => p.id !== id);
-  response.status(204).end();
+  response.json(person);
 });
 
 app.post("/api/persons", (request, response) => {
@@ -76,7 +81,7 @@ app.post("/api/persons", (request, response) => {
     return;
   }
   const person = {
-    id: Math.floor(Math.random() * 999999999),
+    id: Math.floor(Math.random() * 999999999).toString(),
     name: body.name,
     number: body.number,
   };

@@ -7,7 +7,7 @@ const app = express();
 app.use(express.static("dist"));
 app.use(express.json());
 
-morgan.token("body", (req, res) => {
+morgan.token("body", (req) => {
   return JSON.stringify(req.body);
 });
 
@@ -97,7 +97,7 @@ const errorHandler = (error, request, response, next) => {
 };
 app.use(errorHandler);
 
-PORT = process.env.PORT;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

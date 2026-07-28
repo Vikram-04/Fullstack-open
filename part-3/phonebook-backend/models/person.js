@@ -13,8 +13,22 @@ mongoose
   });
 
 const personSchema = mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true,
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    required: true,
+    validate: {
+      validator: (v) => {
+        return /^\d{2,3}-\d+$/.test(v);
+      },
+      message: "Invalid number format",
+    },
+  },
 });
 
 personSchema.set("toJSON", {

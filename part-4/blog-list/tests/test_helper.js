@@ -1,5 +1,5 @@
 const { init } = require("../app");
-
+const Blog = require("../models/blog");
 const initialBlogs = [
   {
     title: "Blog 1",
@@ -20,4 +20,17 @@ const initialBlogs = [
     likes: 42,
   },
 ];
-module.exports = { initialBlogs };
+
+const nonExistingId = async () => {
+  const blog = await new Blog(initialBlogs[0]).save();
+  const id = blog.id;
+  await Blog.findByIdAndDelete(id);
+  return id;
+};
+
+const blogsInDb = async () => {
+  const blogs = await Blog.find({});
+  return blogs.map((b) => b.toJSON());
+};
+
+module.exports = { initialBlogs, nonExistingId, blogsInDb };

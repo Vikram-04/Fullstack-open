@@ -18,10 +18,11 @@ mongoose
   .catch((error) => logger.error(error));
 
 app.use(express.json());
-app.use(morgan("dev"));
+if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
 
 app.use("/api/blogs", blogsRouter);
 
 app.use(middleware.unknownEndpoint);
+app.use(middleware.ErrorHandler);
 
 module.exports = app;

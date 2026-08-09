@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
 const blogsRouter = require("./controllers/blogs");
+const usersRouter = require("./controllers/users");
 const config = require("./utils/config");
 const morgan = require("morgan");
 
@@ -20,6 +21,7 @@ mongoose
 app.use(express.json());
 if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
 
+app.use("/api/users", usersRouter);
 app.use("/api/blogs", blogsRouter);
 
 app.use(middleware.unknownEndpoint);

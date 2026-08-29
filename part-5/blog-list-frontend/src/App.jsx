@@ -1,16 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import loginService from "./services/login";
 import blogService from "./services/blog";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, deleteBlog, likeBlog }) => {
   const blogStyle = {
-    paddingTop: "5px",
-    fontSize: "15px",
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: "solid",
+    borderWidth: 1,
+    marginBottom: 5,
   };
+  console.log(blog.user.name);
   return (
-    <li style={blogStyle}>
-      {blog.title} - {blog.author}
-    </li>
+    <div>
+      <li style={blogStyle}>
+        {blog.title} - {blog.author}
+        <Togglable buttonLabel="show" cancelLabel="hide">
+          {blog.url}
+          <br></br>
+          likes: {blog.likes}
+          <button onClick={likeBlog}>Like</button>
+          <br></br>
+          {blog.user.name}
+        </Togglable>
+        <button onClick={deleteBlog}>Delete</button>
+      </li>
+    </div>
   );
 };
 
@@ -31,14 +46,108 @@ const Notification = ({ message, color }) => {
   return <div style={messageStyle}>{message}</div>;
 };
 
-function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
+const Togglable = (props) => {
+  const [visible, setVisible] = useState(false);
+  const hideWhenVisible = { display: visible ? "none" : "" };
+  const showWhenVisible = { display: visible ? "" : "none" };
+  const toggleVisibility = () => {
+    setVisible(!visible);
+  };
+  useImperativeHandle(props.ref, () => {
+    return { toggleVisibility };
+  });
+  return (
+    <div>
+      <div style={hideWhenVisible}>
+        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+      </div>
+      <div style={showWhenVisible}>
+        {props.children}
+        <br></br>
+        <button onClick={toggleVisibility}>{props.cancelLabel}</button>
+      </div>
+    </div>
+  );
+};
+
+const BlogForm = ({ addBlog }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
   const [likes, setLikes] = useState("");
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    addBlog({ title, author, likes, url });
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+    setLikes("");
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Add blogs</h2>
+      <div>
+        <label>
+          title:
+          <input
+            value={title}
+            onChange={(event) => {
+              setTitle(event.target.value);
+            }}
+            type="text"
+          ></input>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          author:
+          <input
+            value={author}
+            onChange={(event) => {
+              setAuthor(event.target.value);
+            }}
+            type="text"
+          ></input>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          url:
+          <input
+            value={url}
+            onChange={(event) => {
+              setUrl(event.target.value);
+            }}
+            type="text"
+          ></input>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          likes:
+          <input
+            value={likes}
+            onChange={(event) => {
+              setLikes(event.target.value);
+            }}
+            type="text"
+          ></input>
+        </label>
+      </div>
+
+      <button type="submit">Add</button>
+    </form>
+  );
+};
+
+function App() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [message, setMessage] = useState([null, null]);
 
@@ -97,67 +206,9 @@ function App() {
       <button type="submit">Login</button>
     </form>
   );
-
+  const blogFormRef = useRef();
   const loggedInUI = () => (
     <div>
-      <form onSubmit={addBlog}>
-        <h2>Add blogs</h2>
-
-        <div>
-          <label>
-            title:
-            <input
-              value={title}
-              onChange={(event) => {
-                setTitle(event.target.value);
-              }}
-              type="text"
-            ></input>
-          </label>
-        </div>
-
-        <div>
-          <label>
-            author:
-            <input
-              value={author}
-              onChange={(event) => {
-                setAuthor(event.target.value);
-              }}
-              type="text"
-            ></input>
-          </label>
-        </div>
-
-        <div>
-          <label>
-            url:
-            <input
-              value={url}
-              onChange={(event) => {
-                setUrl(event.target.value);
-              }}
-              type="text"
-            ></input>
-          </label>
-        </div>
-
-        <div>
-          <label>
-            likes:
-            <input
-              value={likes}
-              onChange={(event) => {
-                setLikes(event.target.value);
-              }}
-              type="text"
-            ></input>
-          </label>
-        </div>
-
-        <button type="submit">Add</button>
-      </form>
-
       <h2>Blogs</h2>
       <p>{user.name} logged in</p>
       <button
@@ -168,17 +219,45 @@ function App() {
       >
         Logout
       </button>
+      <Togglable buttonLabel="Add Blog" cancelLabel="Cancel" ref={blogFormRef}>
+        <BlogForm addBlog={addBlog}></BlogForm>
+      </Togglable>
       <ul>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog}></Blog>
+          <Blog
+            key={blog.id}
+            blog={blog}
+            deleteBlog={() => deleteBlog(blog.id)}
+            likeBlog={() => likeBlog(blog)}
+          ></Blog>
         ))}
       </ul>
     </div>
   );
 
-  const addBlog = async (event) => {
-    event.preventDefault();
-    const newBlog = { title, author, url, likes };
+  const likeBlog = async (blog) => {
+    const likedBlog = { ...blog, likes: blog.likes + 1 };
+    try {
+      const updatedBlog = await blogService.update(likedBlog);
+      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
+    } catch (e) {
+      setMessage(["Failed to like blog", "red"]);
+      resetMessage();
+    }
+  };
+
+  const deleteBlog = async (id) => {
+    if (window.confirm("Are you sure you want to delete this blog?"))
+      try {
+        await blogService.deleteBlog(id);
+        setBlogs(blogs.filter((b) => b.id !== id));
+      } catch (e) {
+        setMessage(["Failed to delete blog", "red"]);
+        resetMessage();
+      }
+  };
+
+  const addBlog = async (newBlog) => {
     try {
       const savedblog = await blogService.create(newBlog);
       setBlogs(blogs.concat(savedblog));
@@ -187,12 +266,9 @@ function App() {
         "green",
       ]);
       resetMessage();
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-      setLikes("");
+      blogFormRef.current.toggleVisibility();
     } catch (e) {
-      setMessage(`failed to add new blog`, "red");
+      setMessage([`failed to add new blog`, "red"]);
       resetMessage();
     }
   };

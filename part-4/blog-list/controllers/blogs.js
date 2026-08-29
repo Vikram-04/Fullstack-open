@@ -53,13 +53,26 @@ blogsRouter.delete(
   },
 );
 
-blogsRouter.put("/:id", async (request, response) => {
-  const blog = await Blog.findByIdAndUpdate(request.params.id, request.body, {
-    returnDocument: "after",
-    runValidators: true,
+blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
+  const blog = await Blog.findById(request.params.id).populate("user", {
+    username: 1,
+    name: 1,
   });
-  if (!blog) return response.status(404).end();
-  response.json(blog);
+  if (!blog)
+    return response
+      .status(404)
+      .json({ error: `blog with id ${request.params.id} does not exist` });
+  const user = request.user;
+  if (blog.user._id.toString() !== user._id.toString()) {
+    return response.status(401).json({ error: "unauthorized operation" });
+  }
+  const { title, author, likes, url } = request.body;
+  blog.title = title;
+  blog.author = author;
+  blog.likes = likes;
+  blog.url = url;
+  const updatedblog = await blog.save();
+  response.json(updatedblog);
 });
 
 module.exports = blogsRouter;

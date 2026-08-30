@@ -1,16 +1,16 @@
-import { useEffect, useImperativeHandle, useRef, useState } from "react";
-import loginService from "./services/login";
-import blogService from "./services/blog";
+import { useEffect, useImperativeHandle, useRef, useState } from 'react'
+import loginService from './services/login'
+import blogService from './services/blog'
 
 const Blog = ({ blog, deleteBlog, likeBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
+    border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
-  console.log(blog.user.name);
+  }
+  console.log(blog.user.name)
   return (
     <div>
       <li style={blogStyle}>
@@ -28,36 +28,36 @@ const Blog = ({ blog, deleteBlog, likeBlog, user }) => {
         )}
       </li>
     </div>
-  );
-};
+  )
+}
 
 const Notification = ({ message, color }) => {
-  if (message === null) return null;
+  if (message === null) return null
   const messageStyle = {
     border: `solid 2px ${color}`,
     color: `${color}`,
-    padding: "5px",
-    borderRadius: "5px",
-    marginBottom: "20px",
-    textAlign: "center",
-    fontSize: "20px",
-    marginInline: "30px",
-    backgroundColor: "lightGray",
-  };
+    padding: '5px',
+    borderRadius: '5px',
+    marginBottom: '20px',
+    textAlign: 'center',
+    fontSize: '20px',
+    marginInline: '30px',
+    backgroundColor: 'lightGray',
+  }
 
-  return <div style={messageStyle}>{message}</div>;
-};
+  return <div style={messageStyle}>{message}</div>
+}
 
 const Togglable = (props) => {
-  const [visible, setVisible] = useState(false);
-  const hideWhenVisible = { display: visible ? "none" : "" };
-  const showWhenVisible = { display: visible ? "" : "none" };
+  const [visible, setVisible] = useState(false)
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
   const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+    setVisible(!visible)
+  }
   useImperativeHandle(props.ref, () => {
-    return { toggleVisibility };
-  });
+    return { toggleVisibility }
+  })
   return (
     <div>
       <div style={hideWhenVisible}>
@@ -69,22 +69,22 @@ const Togglable = (props) => {
         <button onClick={toggleVisibility}>{props.cancelLabel}</button>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const BlogForm = ({ addBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
-  const [likes, setLikes] = useState("");
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [likes, setLikes] = useState('')
   const handleSubmit = (event) => {
-    event.preventDefault();
-    addBlog({ title, author, likes, url });
-    setTitle("");
-    setAuthor("");
-    setUrl("");
-    setLikes("");
-  };
+    event.preventDefault()
+    addBlog({ title, author, likes, url })
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    setLikes('')
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -95,7 +95,7 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={title}
             onChange={(event) => {
-              setTitle(event.target.value);
+              setTitle(event.target.value)
             }}
             type="text"
           ></input>
@@ -108,7 +108,7 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={author}
             onChange={(event) => {
-              setAuthor(event.target.value);
+              setAuthor(event.target.value)
             }}
             type="text"
           ></input>
@@ -121,7 +121,7 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={url}
             onChange={(event) => {
-              setUrl(event.target.value);
+              setUrl(event.target.value)
             }}
             type="text"
           ></input>
@@ -134,7 +134,7 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={likes}
             onChange={(event) => {
-              setLikes(event.target.value);
+              setLikes(event.target.value)
             }}
             type="text"
           ></input>
@@ -143,39 +143,39 @@ const BlogForm = ({ addBlog }) => {
 
       <button type="submit">Add</button>
     </form>
-  );
-};
+  )
+}
 
 function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-  const [blogs, setBlogs] = useState([]);
-  const [message, setMessage] = useState([null, null]);
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [blogs, setBlogs] = useState([])
+  const [message, setMessage] = useState([null, null])
 
   function resetMessage() {
     setTimeout(() => {
-      setMessage([null, null]);
-    }, 5000);
+      setMessage([null, null])
+    }, 5000)
   }
 
   useEffect(() => {
     const fetchBlogs = async () => {
-      const initialBlogs = await blogService.getAll();
-      const sorted = [...initialBlogs].sort((b1, b2) => b2.likes - b1.likes);
-      setBlogs(sorted);
-    };
-    fetchBlogs();
-  }, []);
+      const initialBlogs = await blogService.getAll()
+      const sorted = [...initialBlogs].sort((b1, b2) => b2.likes - b1.likes)
+      setBlogs(sorted)
+    }
+    fetchBlogs()
+  }, [])
 
   useEffect(() => {
-    const loggedUser = window.localStorage.getItem("loggedBlogAppUser");
+    const loggedUser = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUser) {
-      const user = JSON.parse(loggedUser);
-      setUser(user);
-      blogService.setToken(user.token);
+      const user = JSON.parse(loggedUser)
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, []);
+  }, [])
 
   const loginForm = () => (
     <form onSubmit={handleSubmit}>
@@ -186,7 +186,7 @@ function App() {
           <input
             value={username}
             onChange={(event) => {
-              setUsername(event.target.value);
+              setUsername(event.target.value)
             }}
             type="text"
           ></input>
@@ -199,7 +199,7 @@ function App() {
           <input
             value={password}
             onChange={(event) => {
-              setPassword(event.target.value);
+              setPassword(event.target.value)
             }}
             type="text"
           ></input>
@@ -208,16 +208,16 @@ function App() {
 
       <button type="submit">Login</button>
     </form>
-  );
-  const blogFormRef = useRef();
+  )
+  const blogFormRef = useRef()
   const loggedInUI = () => (
     <div>
       <h2>Blogs</h2>
       <p>{user.name} logged in</p>
       <button
         onClick={() => {
-          window.localStorage.removeItem("loggedBlogAppUser");
-          setUser(null);
+          window.localStorage.removeItem('loggedBlogAppUser')
+          setUser(null)
         }}
       >
         Logout
@@ -237,68 +237,71 @@ function App() {
         ))}
       </ul>
     </div>
-  );
+  )
 
   const likeBlog = async (blog) => {
-    const likedBlog = { ...blog, likes: blog.likes + 1 };
+    const likedBlog = { ...blog, likes: blog.likes + 1 }
     try {
-      const updatedBlog = await blogService.update(likedBlog);
-      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
+      const updatedBlog = await blogService.update(likedBlog)
+      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)))
     } catch (e) {
-      setMessage(["Failed to like blog", "red"]);
-      resetMessage();
+      console.log(e)
+      setMessage(['Failed to like blog', 'red'])
+      resetMessage()
     }
-  };
+  }
 
   const deleteBlog = async (id) => {
-    if (window.confirm("Are you sure you want to delete this blog?"))
+    if (window.confirm('Are you sure you want to delete this blog?'))
       try {
-        await blogService.deleteBlog(id);
-        setBlogs(blogs.filter((b) => b.id !== id));
+        await blogService.deleteBlog(id)
+        setBlogs(blogs.filter((b) => b.id !== id))
       } catch (e) {
-        setMessage(["Failed to delete blog", "red"]);
-        resetMessage();
+        console.log(e)
+        setMessage(['Failed to delete blog', 'red'])
+        resetMessage()
       }
-  };
+  }
 
   const addBlog = async (newBlog) => {
     try {
-      const savedblog = await blogService.create(newBlog);
-      setBlogs(blogs.concat(savedblog));
+      const savedblog = await blogService.create(newBlog)
+      setBlogs(blogs.concat(savedblog))
       setMessage([
         `a new blog ${savedblog.title} by ${savedblog.author} added`,
-        "green",
-      ]);
-      resetMessage();
-      blogFormRef.current.toggleVisibility();
+        'green',
+      ])
+      resetMessage()
+      blogFormRef.current.toggleVisibility()
     } catch (e) {
-      setMessage([`failed to add new blog`, "red"]);
-      resetMessage();
+      console.log(e)
+      setMessage(['failed to add new blog', 'red'])
+      resetMessage()
     }
-  };
+  }
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     try {
-      const user = await loginService.login({ username, password });
-      setUser(user);
-      blogService.setToken(user.token);
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      setUsername("");
-      setPassword("");
+      const user = await loginService.login({ username, password })
+      setUser(user)
+      blogService.setToken(user.token)
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      setUsername('')
+      setPassword('')
     } catch (e) {
-      setMessage(["invalid credentials", "red"]);
-      resetMessage();
-      console.log(e);
+      setMessage(['invalid credentials', 'red'])
+      resetMessage()
+      console.log(e)
     }
-  };
+  }
   return (
     <div>
       <Notification message={message[0]} color={message[1]}></Notification>
       {!user && loginForm()}
       {user && loggedInUI()}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

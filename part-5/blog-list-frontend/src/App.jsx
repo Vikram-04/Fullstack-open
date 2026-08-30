@@ -2,7 +2,7 @@ import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import loginService from "./services/login";
 import blogService from "./services/blog";
 
-const Blog = ({ blog, deleteBlog, likeBlog }) => {
+const Blog = ({ blog, deleteBlog, likeBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -23,7 +23,9 @@ const Blog = ({ blog, deleteBlog, likeBlog }) => {
           <br></br>
           {blog.user.name}
         </Togglable>
-        <button onClick={deleteBlog}>Delete</button>
+        {user.username === blog.user.username && (
+          <button onClick={deleteBlog}>Delete</button>
+        )}
       </li>
     </div>
   );
@@ -160,7 +162,8 @@ function App() {
   useEffect(() => {
     const fetchBlogs = async () => {
       const initialBlogs = await blogService.getAll();
-      setBlogs(initialBlogs);
+      const sorted = [...initialBlogs].sort((b1, b2) => b2.likes - b1.likes);
+      setBlogs(sorted);
     };
     fetchBlogs();
   }, []);
@@ -229,6 +232,7 @@ function App() {
             blog={blog}
             deleteBlog={() => deleteBlog(blog.id)}
             likeBlog={() => likeBlog(blog)}
+            user={user}
           ></Blog>
         ))}
       </ul>

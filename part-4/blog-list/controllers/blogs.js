@@ -32,7 +32,11 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
   const savedBlog = await newBlog.save();
   user.blogs = user.blogs.concat(savedBlog._id);
   await user.save();
-  response.status(201).json(savedBlog);
+  const populatedBlog = await savedBlog.populate([
+    { path: "user", select: "username name" },
+    // Populating user inside a subdocument user
+  ]);
+  response.status(201).json(populatedBlog);
 });
 
 blogsRouter.delete(
@@ -53,7 +57,7 @@ blogsRouter.delete(
   },
 );
 
-blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
+blogsRouter.put("/:id", async (request, response) => {
   const blog = await Blog.findById(request.params.id).populate("user", {
     username: 1,
     name: 1,
@@ -62,10 +66,6 @@ blogsRouter.put("/:id", middleware.userExtractor, async (request, response) => {
     return response
       .status(404)
       .json({ error: `blog with id ${request.params.id} does not exist` });
-  const user = request.user;
-  if (blog.user._id.toString() !== user._id.toString()) {
-    return response.status(401).json({ error: "unauthorized operation" });
-  }
   const { title, author, likes, url } = request.body;
   blog.title = title;
   blog.author = author;

@@ -10,7 +10,8 @@
     "start": "node index.js ",
     "test": "NODE_ENV=test node --test",
     "dev": "NODE_ENV=development node --watch index.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start:test": "NODE_ENV=test node --watch index.js"
   },
   "dependencies": {
     "@eslint/js": "^10.0.1",

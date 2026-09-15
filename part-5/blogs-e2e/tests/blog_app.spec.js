@@ -1,5 +1,5 @@
 const { describe, test, expect, beforeEach } = require("@playwright/test");
-const { loginWith } = require("./helper");
+const { loginWith, createBlog } = require("./helper");
 describe("Blog app", () => {
   beforeEach(async ({ page, request }) => {
     await request.post("/api/testing/reset");
@@ -28,13 +28,19 @@ describe("Blog app", () => {
       await loginWith(page, "Vikram-04", "abcd");
     });
     test("new blog can be created", async ({ page }) => {
-      await page.getByRole("button", { name: "Add Blog" }).click();
-      await page.getByRole("textbox", { name: "title:" }).fill("Title 1");
-      await page.getByRole("textbox", { name: "author:" }).fill("Author 1");
-      await page.getByRole("textbox", { name: "url:" }).fill("url 1");
-      await page.getByRole("textbox", { name: "likes:" }).fill("0");
-      await page.getByRole("button", { name: "Add" }).click();
+      await createBlog(page, "Title 1", "Author 1", "url 1", "0");
       await expect(page.getByText("Title 1 - Author 1showurl")).toBeVisible();
+    });
+    describe("and a blog exists", () => {
+      beforeEach(async ({ page }) => {
+        await createBlog(page, "Title 1", "Author 1", "url 1", "0");
+      });
+      test("blog can be liked", async ({ page }) => {
+        await page.getByRole("button", { name: "show" }).click();
+        await expect(page.getByText("likes: 0")).toBeVisible();
+        await page.getByRole("button", { name: "Like" }).click();
+        await expect(page.getByText("likes: 1")).toBeVisible();
+      });
     });
   });
 });

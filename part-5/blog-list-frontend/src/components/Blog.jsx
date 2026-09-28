@@ -8,13 +8,13 @@ const Blog = ({ blog, deleteBlog, likeBlog, user }) => {
     marginBottom: 5,
   }
   return (
-    <div>
+    <div className="blog">
       <li style={blogStyle}>
         {blog.title} - {blog.author}
         <Togglable buttonLabel="show" cancelLabel="hide">
           {blog.url}
           <br></br>
-          likes: {blog.likes}
+          <span>likes: {blog.likes}</span>
           <button onClick={likeBlog}>Like</button>
           <br></br>
           {blog.user.name}

@@ -103,7 +103,10 @@ function App() {
     const likedBlog = { ...blog, likes: blog.likes + 1 }
     try {
       const updatedBlog = await blogService.update(likedBlog)
-      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)))
+      const sorted = blogs
+        .map((b) => (b.id === blog.id ? updatedBlog : b))
+        .sort((b1, b2) => b2.likes - b1.likes);
+      setBlogs(sorted);
     } catch (e) {
       console.log(e)
       setMessage(['Failed to like blog', 'red'])
@@ -126,7 +129,10 @@ function App() {
   const addBlog = async (newBlog) => {
     try {
       const savedblog = await blogService.create(newBlog)
-      setBlogs(blogs.concat(savedblog))
+      const sorted = blogs
+        .concat(savedblog)
+        .sort((b1, b2) => b2.likes - b1.likes);
+      setBlogs(sorted);
       setMessage([
         `a new blog ${savedblog.title} by ${savedblog.author} added`,
         'green',

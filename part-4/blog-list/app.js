@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const logger = require("./utils/logger");
@@ -22,7 +23,10 @@ mongoose
 app.use(express.json());
 if (process.env.NODE_ENV !== "test") app.use(morgan("dev"));
 app.use(middleware.tokenExtractor);
-
+if (process.env.NODE_ENV === "test") {
+  const testRouter = require("./controllers/testing");
+  app.use("/api/testing", testRouter);
+}
 app.use("/api/login", loginRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/blogs", blogsRouter);

@@ -1,54 +1,54 @@
-import Blog from "./Blog";
-import BlogForm from "./BlogForm";
-import Togglable from "./Togglable";
+import Blog from './Blog'
+import BlogForm from './BlogForm'
+import Togglable from './Togglable'
 
 const BlogList = ({ blogs }) => {
   const likeBlog = async (blog) => {
-    const likedBlog = { ...blog, likes: blog.likes + 1 };
+    const likedBlog = { ...blog, likes: blog.likes + 1 }
     try {
-      const updatedBlog = await blogService.update(likedBlog);
+      const updatedBlog = await blogService.update(likedBlog)
       const sorted = blogs
         .map((b) => (b.id === blog.id ? updatedBlog : b))
-        .sort((b1, b2) => b2.likes - b1.likes);
-      setBlogs(sorted);
+        .sort((b1, b2) => b2.likes - b1.likes)
+      setBlogs(sorted)
     } catch (e) {
-      console.log(e);
-      setMessage(["Failed to like blog", "red"]);
-      resetMessage();
+      console.log(e)
+      setMessage(['Failed to like blog', 'red'])
+      resetMessage()
     }
-  };
+  }
 
   const deleteBlog = async (id) => {
-    if (window.confirm("Are you sure you want to delete this blog?"))
+    if (window.confirm('Are you sure you want to delete this blog?'))
       try {
-        await blogService.deleteBlog(id);
-        setBlogs(blogs.filter((b) => b.id !== id));
+        await blogService.deleteBlog(id)
+        setBlogs(blogs.filter((b) => b.id !== id))
       } catch (e) {
-        console.log(e);
-        setMessage(["Failed to delete blog", "red"]);
-        resetMessage();
+        console.log(e)
+        setMessage(['Failed to delete blog', 'red'])
+        resetMessage()
       }
-  };
+  }
 
   const addBlog = async (newBlog) => {
     try {
-      const savedblog = await blogService.create(newBlog);
+      const savedblog = await blogService.create(newBlog)
       const sorted = blogs
         .concat(savedblog)
-        .sort((b1, b2) => b2.likes - b1.likes);
-      setBlogs(sorted);
+        .sort((b1, b2) => b2.likes - b1.likes)
+      setBlogs(sorted)
       setMessage([
         `a new blog ${savedblog.title} by ${savedblog.author} added`,
-        "green",
-      ]);
-      resetMessage();
-      blogFormRef.current.toggleVisibility();
+        'green',
+      ])
+      resetMessage()
+      blogFormRef.current.toggleVisibility()
     } catch (e) {
-      console.log(e);
-      setMessage(["failed to add new blog", "red"]);
-      resetMessage();
+      console.log(e)
+      setMessage(['failed to add new blog', 'red'])
+      resetMessage()
     }
-  };
+  }
   return (
     <div>
       <h2>Blogs</h2>
@@ -68,6 +68,6 @@ const BlogList = ({ blogs }) => {
         ))}
       </ul>
     </div>
-  );
-};
-export default BlogList;
+  )
+}
+export default BlogList

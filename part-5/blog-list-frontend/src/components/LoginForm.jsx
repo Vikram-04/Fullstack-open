@@ -1,6 +1,6 @@
 const LoginForm = ({ user, handleSubmit }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const loginForm = () => (
     <form onSubmit={handleSubmit}>
@@ -11,7 +11,7 @@ const LoginForm = ({ user, handleSubmit }) => {
           <input
             value={username}
             onChange={(event) => {
-              setUsername(event.target.value);
+              setUsername(event.target.value)
             }}
             type="text"
           ></input>
@@ -24,7 +24,7 @@ const LoginForm = ({ user, handleSubmit }) => {
           <input
             value={password}
             onChange={(event) => {
-              setPassword(event.target.value);
+              setPassword(event.target.value)
             }}
             type="text"
           ></input>
@@ -33,26 +33,26 @@ const LoginForm = ({ user, handleSubmit }) => {
 
       <button type="submit">Login</button>
     </form>
-  );
+  )
   const loggedInUI = () => (
     <div>
       <p>{user.name} logged in</p>
       <button
         onClick={() => {
-          window.localStorage.removeItem("loggedBlogAppUser");
-          setUser(null);
+          window.localStorage.removeItem('loggedBlogAppUser')
+          setUser(null)
         }}
       >
         Logout
       </button>
     </div>
-  );
+  )
   return (
     <div>
       {user && loggedInUI()}
       {!user && loginForm()}
     </div>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm

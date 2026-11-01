@@ -116,6 +116,11 @@ const App = () => {
           setMessage([`Added ${returnedPerson.name} to phonebook`, "green"]);
           resetMessage();
           setPersons([...persons, returnedPerson]);
+        })
+        .catch((error) => {
+          console.log("error: ", error.response.data.error);
+          setMessage([error.response.data.error, "red"]);
+          resetMessage();
         });
     } else {
       if (

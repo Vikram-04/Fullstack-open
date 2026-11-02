@@ -1,17 +1,15 @@
-import { useState } from 'react'
+import { useState } from "react";
 const BlogForm = ({ addBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-  const [likes, setLikes] = useState('')
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
   const handleSubmit = (event) => {
-    event.preventDefault()
-    addBlog({ title, author, likes, url })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-    setLikes('')
-  }
+    event.preventDefault();
+    addBlog({ title, author, likes, url });
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -22,7 +20,7 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={title}
             onChange={(event) => {
-              setTitle(event.target.value)
+              setTitle(event.target.value);
             }}
             type="text"
           ></input>
@@ -35,7 +33,7 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={author}
             onChange={(event) => {
-              setAuthor(event.target.value)
+              setAuthor(event.target.value);
             }}
             type="text"
           ></input>
@@ -48,28 +46,14 @@ const BlogForm = ({ addBlog }) => {
           <input
             value={url}
             onChange={(event) => {
-              setUrl(event.target.value)
+              setUrl(event.target.value);
             }}
             type="text"
           ></input>
         </label>
       </div>
-
-      <div>
-        <label>
-          likes:
-          <input
-            value={likes}
-            onChange={(event) => {
-              setLikes(event.target.value)
-            }}
-            type="text"
-          ></input>
-        </label>
-      </div>
-
       <button type="submit">Add</button>
     </form>
-  )
-}
-export default BlogForm
+  );
+};
+export default BlogForm;

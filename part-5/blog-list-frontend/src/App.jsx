@@ -5,7 +5,7 @@ import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import { Link, Route, Routes } from "react-router";
+import { Link, Route, Routes, useNavigate } from "react-router";
 import BlogList from "./components/BlogList";
 import LoginForm from "./components/LoginForm";
 
@@ -35,18 +35,14 @@ function App() {
       blogService.setToken(user.token);
     }
   }, []);
-
-  const blogFormRef = useRef();
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const navigate = useNavigate();
+  const handleSubmit = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
       setUser(user);
       blogService.setToken(user.token);
       window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
-      setUsername("");
-      setPassword("");
+      navigate("/");
     } catch (e) {
       setMessage(["invalid credentials", "red"]);
       resetMessage();
@@ -60,20 +56,32 @@ function App() {
     <div>
       <div>
         <Link to="/" style={padding}>
-          Home
+          Blogs
         </Link>
-        <Link to="/login" style={padding}>
-          Login
-        </Link>
+        {!user && (
+          <Link to="/login" style={padding}>
+            Login
+          </Link>
+        )}
+        {user && (
+          <button
+            onClick={() => {
+              window.localStorage.removeItem("loggedBlogAppUser");
+              setUser(null);
+            }}
+          >
+            Logout
+          </button>
+        )}
       </div>
+      <Notification message={message[0]} color={message[1]}></Notification>
       <Routes>
-        <Route path="/" element={<BlogList blogs={blogs} />} />
+        <Route path="/" element={<BlogList blogs={blogs} user={user} />} />
         <Route
           path="/login"
-          element={<LoginForm user={user} handleSubmit={handleSubmit} />}
+          element={<LoginForm handleSubmit={handleSubmit} />}
         />
       </Routes>
-      <Notification message={message[0]} color={message[1]}></Notification>
     </div>
   );
 }

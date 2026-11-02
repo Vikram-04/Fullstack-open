@@ -1,12 +1,12 @@
-import Togglable from './Togglable'
+import Togglable from "./Togglable";
 const Blog = ({ blog, deleteBlog, likeBlog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
-    border: 'solid',
+    border: "solid",
     borderWidth: 1,
     marginBottom: 5,
-  }
+  };
   return (
     <div className="blog">
       <li style={blogStyle}>
@@ -19,11 +19,11 @@ const Blog = ({ blog, deleteBlog, likeBlog, user }) => {
           <br></br>
           {blog.user.name}
         </Togglable>
-        {user.username === blog.user.username && (
+        {user && user.username === blog.user.username && (
           <button onClick={deleteBlog}>Delete</button>
         )}
       </li>
     </div>
-  )
-}
-export default Blog
+  );
+};
+export default Blog;

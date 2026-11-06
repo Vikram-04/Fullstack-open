@@ -6,37 +6,42 @@ describe("Blog app", () => {
     await request.post("/api/users", {
       data: { username: "Vikram-04", name: "Vikram", password: "abcd" },
     });
-    await page.goto("http://localhost:5173");
+    await page.goto("/");
+    await expect(page).toHaveURL("/");
   });
-  test("Login form is shown", async ({ page }) => {
-    await expect(page.getByText("log in to application")).toBeVisible();
+  test("Blog list is shown", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Blogs" })).toBeVisible();
   });
   describe("Login", () => {
     test("succeeds with right credentials", async ({ page }) => {
       await loginWith(page, "Vikram-04", "abcd");
-      await expect(page.getByText("Vikram logged in")).toBeVisible();
+      await expect(page).toHaveURL("/");
     });
     test("fails with wrong credentials", async ({ page }) => {
       await loginWith(page, "Vikram-04", "wrong");
       const errorDiv = page.getByText("invalid credentials");
       await expect(errorDiv).toHaveCSS("color", "rgb(255, 0, 0)");
-      await expect(page.getByText("Vikram logged in")).not.toBeVisible();
+      await expect(page).toHaveURL("/login");
     });
   });
   describe("When logged in", () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, "Vikram-04", "abcd");
+      await expect(page).toHaveURL("/");
     });
     test("new blog can be created", async ({ page }) => {
-      await createBlog(page, "Title 1", "Author 1", "url 1", "0");
-      await expect(page.getByText("Title 1 - Author 1showurl")).toBeVisible();
+      await createBlog(page, "Title 1", "Author 1", "url 1");
+      await expect(page).toHaveURL("/");
+      await expect(page.getByRole("link", { name: "Title 1" })).toBeVisible();
     });
     describe("and a blog exists", () => {
       beforeEach(async ({ page }) => {
-        await createBlog(page, "Title 1", "Author 1", "url 1", "0");
+        await createBlog(page, "Title 1", "Author 1", "url 1");
+        await expect(page).toHaveURL("/");
+        await page.getByRole("link", { name: "Title 1" }).click();
+        await expect(page).toHaveURL(/\/blogs\/[\w-]+/);
       });
       test("blog can be liked", async ({ page }) => {
-        await page.getByRole("button", { name: "show" }).click();
         await expect(page.getByText("likes: 0")).toBeVisible();
         await page.getByRole("button", { name: "Like" }).click();
         await expect(page.getByText("likes: 1")).toBeVisible();
@@ -46,10 +51,10 @@ describe("Blog app", () => {
         page.on("dialog", async (dialog) => {
           await dialog.accept(); // Clicks "OK"
         });
-        await page.getByRole("button", { name: "show" }).click();
         await page.getByRole("button", { name: "delete" }).click();
+        await expect(page).toHaveURL("/");
         await expect(
-          page.getByText("Title 1 - Author 1showurl"),
+          page.getByRole("link", { name: "Title 1" }),
         ).not.toBeVisible();
       });
     });

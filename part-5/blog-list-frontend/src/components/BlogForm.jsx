@@ -5,7 +5,7 @@ const BlogForm = ({ addBlog }) => {
   const [url, setUrl] = useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
-    addBlog({ title, author, likes, url });
+    addBlog({ title, author, url });
     setTitle("");
     setAuthor("");
     setUrl("");

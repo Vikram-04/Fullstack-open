@@ -8,15 +8,23 @@ import Togglable from "./components/Togglable";
 import { Link, Route, Routes, useMatch, useNavigate } from "react-router";
 import BlogList from "./components/BlogList";
 import LoginForm from "./components/LoginForm";
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 
 function App() {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
-  const [message, setMessage] = useState([null, null]);
+  const [message, setMessage] = useState(null);
 
   function resetMessage() {
     setTimeout(() => {
-      setMessage([null, null]);
+      setMessage(null);
     }, 5000);
   }
   useEffect(() => {
@@ -44,7 +52,7 @@ function App() {
       window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
       navigate("/");
     } catch (e) {
-      setMessage(["invalid credentials", "red"]);
+      setMessage({ content: "Invalid credentials", type: "failure" });
       resetMessage();
       console.log(e);
     }
@@ -65,7 +73,7 @@ function App() {
       setBlogs(sorted);
     } catch (e) {
       console.log(e);
-      setMessage(["Failed to like blog", "red"]);
+      setMessage({ content: "Failed to like blog", type: "failure" });
       resetMessage();
     }
   };
@@ -78,7 +86,7 @@ function App() {
         navigate("/");
       } catch (e) {
         console.log(e);
-        setMessage(["Failed to delete blog", "red"]);
+        setMessage({ content: "Failed to delete blog", type: "failure" });
         resetMessage();
       }
   };
@@ -90,48 +98,62 @@ function App() {
         .concat(savedblog)
         .sort((b1, b2) => b2.likes - b1.likes);
       setBlogs(sorted);
-      setMessage([
-        `a new blog ${savedblog.title} by ${savedblog.author} added`,
-        "green",
-      ]);
+      setMessage({
+        content: `New blog ${savedblog.title} by ${savedblog.author} added`,
+        type: "success",
+      });
       navigate("/");
       resetMessage();
     } catch (e) {
       console.log(e);
-      setMessage(["failed to add new blog", "red"]);
+      setMessage({ content: "Failed to add new blog", type: "failure" });
       resetMessage();
     }
   };
-
+  const style = { "&:hover": { bgcolor: "rgba(255,255,255,0.3)" } };
   return (
-    <div>
-      <div>
-        <Link to="/" style={padding}>
-          Blogs
-        </Link>
-        {user && (
-          <Link to="/blogs/create" style={padding}>
-            New blog
-          </Link>
-        )}
-        {!user && (
-          <Link to="/login" style={padding}>
-            Login
-          </Link>
-        )}
-        {user && (
-          <button
-            onClick={() => {
-              window.localStorage.removeItem("loggedBlogAppUser");
-              setUser(null);
-              navigate("/");
-            }}
-          >
-            Logout
-          </button>
-        )}
-      </div>
-      <Notification message={message[0]} color={message[1]}></Notification>
+    <Container>
+      <AppBar position="static" sx={{ mb: 4 }}>
+        <Toolbar>
+          <Typography variant="h6" component="div">
+            Blog App
+          </Typography>
+          <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
+            <Button color="inherit" component={Link} to="/" sx={style}>
+              Blogs
+            </Button>
+            {user && (
+              <Button
+                color="inherit"
+                component={Link}
+                to="/blogs/create"
+                sx={style}
+              >
+                New blog
+              </Button>
+            )}
+            {!user && (
+              <Button component={Link} color="inherit" sx={style} to="/login">
+                Login
+              </Button>
+            )}
+            {user && (
+              <Button
+                color="inherit"
+                sx={style}
+                onClick={() => {
+                  window.localStorage.removeItem("loggedBlogAppUser");
+                  setUser(null);
+                  navigate("/");
+                }}
+              >
+                Logout
+              </Button>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Notification message={message} />
       <Routes>
         <Route
           path="/blogs/create"
@@ -154,7 +176,7 @@ function App() {
           element={<LoginForm handleSubmit={handleSubmit} />}
         />
       </Routes>
-    </div>
+    </Container>
   );
 }
 

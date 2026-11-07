@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button, TextField } from "@mui/material";
 const BlogForm = ({ addBlog }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -10,49 +11,51 @@ const BlogForm = ({ addBlog }) => {
     setAuthor("");
     setUrl("");
   };
-
+  const style = { marginTop: 10 };
   return (
     <form onSubmit={handleSubmit}>
       <h2>Add blogs</h2>
       <div>
-        <label>
-          title:
-          <input
-            value={title}
-            onChange={(event) => {
-              setTitle(event.target.value);
-            }}
-            type="text"
-          ></input>
-        </label>
+        <TextField
+          style={style}
+          value={title}
+          onChange={(event) => {
+            setTitle(event.target.value);
+          }}
+          type="text"
+          label="Title "
+          variant="standard"
+        ></TextField>
       </div>
 
       <div>
-        <label>
-          author:
-          <input
-            value={author}
-            onChange={(event) => {
-              setAuthor(event.target.value);
-            }}
-            type="text"
-          ></input>
-        </label>
+        <TextField
+          style={style}
+          value={author}
+          onChange={(event) => {
+            setAuthor(event.target.value);
+          }}
+          variant="standard"
+          type="text"
+          label="Author"
+        ></TextField>
       </div>
 
       <div>
-        <label>
-          url:
-          <input
-            value={url}
-            onChange={(event) => {
-              setUrl(event.target.value);
-            }}
-            type="text"
-          ></input>
-        </label>
+        <TextField
+          style={style}
+          variant="standard"
+          value={url}
+          onChange={(event) => {
+            setUrl(event.target.value);
+          }}
+          type="text"
+          label="URL"
+        ></TextField>
       </div>
-      <button type="submit">Add</button>
+      <Button type="submit" variant="contained" style={{ marginTop: 10 }}>
+        Add
+      </Button>
     </form>
   );
 };

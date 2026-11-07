@@ -1,17 +1,12 @@
-const Notification = ({ message, color }) => {
-  if (message === null) return null
-  const messageStyle = {
-    border: `solid 2px ${color}`,
-    color: `${color}`,
-    padding: '5px',
-    borderRadius: '5px',
-    marginBottom: '20px',
-    textAlign: 'center',
-    fontSize: '20px',
-    marginInline: '30px',
-    backgroundColor: 'lightGray',
-  }
+import { Alert } from "@mui/material";
 
-  return <div style={messageStyle}>{message}</div>
-}
-export default Notification
+const Notification = ({ message }) => {
+  if (message === null) return null;
+
+  return (
+    <Alert style={{ marginTop: 10, marginBottom: 10 }} severity={message.type}>
+      {message.content}
+    </Alert>
+  );
+};
+export default Notification;
